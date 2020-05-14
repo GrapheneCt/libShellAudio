@@ -1,6 +1,6 @@
 # libShellAudio
 
-ShellAudio is PS Vita library that is a result of reverse engineering Sony's static library that is used in system applications and Music application play audio files using SceShell resources.
+ShellAudio is PS Vita library that is a result of reverse engineering Sony's static library that is used in system applications and Music application to play audio files using SceShell resources.
 
 ## Features:
 1. Very easy to use.

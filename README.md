@@ -13,3 +13,6 @@ ShellAudio is PS Vita library that is a result of reverse engineering Sony's sta
 2. AAC (.m4a, .aac)
 3. ATRAC9 (.at9)
 4. WAV (.wav)
+
+## Examples of usage:
+[Here](https://forum.devchroma.nl/index.php/topic,158.0.html)

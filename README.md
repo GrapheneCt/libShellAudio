@@ -7,6 +7,7 @@ ShellAudio is PS Vita library that is a result of reverse engineering Sony's sta
 2. Doesn't waste any of the resources allocated to the application.
 3. All decoding is performed on Codec Engine.
 4. Supports EQ, different repeat modes, shuffle mode.
+5. When in music mode, volume can be controlled with "Music" slider from quick menu.
 
 ## Supported codecs:
 1. MP3 (.mp3)

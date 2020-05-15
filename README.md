@@ -4,7 +4,7 @@ ShellAudio is PS Vita library that is a result of reverse engineering Sony's sta
 
 ## Features:
 1. Very easy to use.
-2. Doesn't waste any of the resources allocated to the application.
+2. Doesn't use any of the resources allocated to the application.
 3. All decoding is performed on Codec Engine.
 4. Supports EQ, different repeat modes, shuffle mode.
 5. When in music mode, volume can be controlled with "Music" slider from quick menu.

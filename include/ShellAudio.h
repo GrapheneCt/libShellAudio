@@ -29,6 +29,37 @@ typedef struct SceShellSvcAudioMusicPlayerStatus {
 	int stat3;
 } SceShellSvcAudioMusicPlayerStatus;
 
+typedef struct SceShellSvcAudioPlaybackStatus {
+	char unk_00[0x10];
+	int currentState;
+	int unk_14;
+	int bgmPortStatus;
+	char unk_1C[0x10];
+	unsigned int currentTime;
+	char unk_30[0x40];
+} SceShellSvcAudioPlaybackStatus;
+
+typedef struct SceShellAudioBGMState {
+	int bgmPortOwnerId;
+	int bgmPortStatus;
+	int someStatus1;
+	int currentState;
+	int someStatus2;
+} SceShellAudioBGMState;
+
+typedef struct SceShellSvcAudioMetadata {
+	int unk_00;
+	int unk_04;
+	int duration;
+	char title[0x400];
+	char unk_40C[0x400];
+	char album[0x400];
+	char unk_C0C[0x400];
+	char artist[0x400];
+	char unk_140C[0x400];
+	int unk_180C;
+} SceShellSvcAudioMetadata;
+
 typedef enum SceShellSvcAudioCommands {
 	SCE_SHELLAUDIO_DEFAULT = 0,
 	SCE_SHELLAUDIO_PLAY = 0x1,
@@ -57,6 +88,16 @@ typedef enum SceShellSvcAudioShuffleMode {
 	SCE_SHELLAUDIO_SHUFFLE_ENABLE,
 } SceShellSvcAudioShuffleMode;
 
+typedef enum SceShellSvcAudioPlaybackState {
+	SCE_SHELLAUDIO_PBSTATE_MUSIC = 0x1,
+	SCE_SHELLAUDIO_PBSTATE_SHELLBGM = 0x2
+} SceShellSvcAudioPlaybackState;
+
+typedef enum SceShellSvcAudioBGMPortState {
+	SCE_SHELLAUDIO_BGM_PORT_SHELL = 0,
+	SCE_SHELLAUDIO_BGM_PORT_MUSIC_PLAYER = 0x80
+} SceShellSvcAudioBGMPortState;
+
 /* Error codes */
 
 typedef enum SceShellSvcAudioErrorCodes {
@@ -67,26 +108,189 @@ typedef enum SceShellSvcAudioErrorCodes {
 	SCE_SHELLAUDIO_ERROR_INVALID_ARG_2 = 0x80100E00
 } SceShellSvcAudioErrorCodes;
 
+/* SceShell (for SceShell plugins only) */
+
+/**
+ * Initialize ShellAudio for SceShell.
+ *
+ */
+void shellAudioInitializeForShell(void);
+
 /* Application BGM */
 
+/**
+ * Initialize ShellAudio for BGM.
+ *
+ * @param[in] devnum - 0 for BGM proxy, 1 for SceShell
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioInitializeForBGM(int init_type);
+
+/**
+ * Finish ShellAudio for BGM.
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioFinishForBGM(void);
+
+/**
+ * Set path to audio file for BGM.
+ *
+ * @param[in] path - path to audio file
+ * @param[in] path - pointer to ::SceShellSvcAudioCustomOpt struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetAudioForBGM(char* path, SceShellSvcAudioCustomOpt* optParams);
-int shellAudioSetParam1ForBGM(int param);
+
+/**
+ * Set audio volume for BGM.
+ *
+ * @param[in] volume - audio volume (max is 32768)
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioSetVolumeForBGM(unsigned int volume);
+
+/**
+ * Set param2 for BGM.
+ *
+ * @param[in] param - param2
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetParam2ForBGM(int8_t param);
+
+/**
+ * Send command for BGM.
+ *
+ * @param[in] commandId - one of ::SceShellSvcAudioCommands
+ * @param[in] param_2 - unknown param, set to 0
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSendCommandForBGM(int commandId, int param_2);
 
 /* Music Player */
 
+/**
+ * Initialize ShellAudio for music player.
+ *
+ * @param[in] init_type - unknown, set to 0
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioInitializeForMusicPlayer(int init_type);
-int shellAudioGetSomethingForMusicPlayer1(void* infoBuffer);
-int shellAudioGetSomethingForMusicPlayer2(void* infoBuffer);
-int shellAudioGetSomethingForMusicPlayer3(void* infoBuffer);
+
+/**
+ * Get Sqlite commands buffer for music player.
+ *
+ * @param[out] infoBuffer - pointer to buffer to store output, size is 0x828
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioGetSqliteBufferForMusicPlayer(void* infoBuffer);
+
+/**
+ * Get track metadata for music player.
+ *
+ * @param[out] infoBuffer - pointer to ::SceShellSvcAudioMetadata struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioGetMetadataForMusicPlayer(SceShellSvcAudioMetadata* infoBuffer);
+
+/**
+ * Get playback status for music player.
+ *
+ * @param[out] infoBuffer - pointer to ::SceShellSvcAudioPlaybackStatus struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioGetPlaybackStatusForMusicPlayer(SceShellSvcAudioPlaybackStatus* infoBuffer);
+
+/**
+ * Get some unknown status for music player.
+ *
+ * @param[out] status - pointer to ::SceShellSvcAudioMusicPlayerStatus struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioGetStatusForMusicPlayer(SceShellSvcAudioMusicPlayerStatus* status);
+
+/**
+ * Send command for music player.
+ *
+ * @param[in] commandId - one of ::SceShellSvcAudioCommands
+ * @param[in] param_2 - unknown param, set to 0
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSendCommandForMusicPlayer(int commandId, int param_2);
+
+/**
+ * Set time to seek for music player, issue before shellAudioSendCommandForMusicPlayer().
+ *
+ * @param[in] time - time to seek in milliseconds
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetSeekTimeForMusicPlayer(unsigned int time);
+
+/**
+ * Set repeat mode for music player.
+ *
+ * @param[in] mode - one of 
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetRepeatModeForMusicPlayer(int mode);
+
+/**
+ * Set shuffle mode for music player.
+ *
+ * @param[in] mode - one of
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetShuffleModeForMusicPlayer(int mode);
+
+/**
+ * Set EQ mode for music player.
+ *
+ * @param[in] mode - one of
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetEQModeForMusicPlayer(int mode);
+
+/**
+ * Lock music player controls and playback until application is terminated for music player.
+ *
+ * @param[in] param - unknown param, set to 1
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioLockForMusicPlayer(int8_t param);
+
+/**
+ * Send Sqlite commands buffer for music player.
+ *
+ * @param[in] infoBuffer - pointer to sqlite commands buffer, size is 0x828
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioSendSqliteBufferForMusicPlayer(void* infoBuffer, uint16_t param);
+
+/**
+ * Set path to audio file for music player.
+ *
+ * @param[in] path - path to audio file
+ * @param[in] path - pointer to ::SceShellSvcAudioCustomOpt struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
 int shellAudioSetAudioForMusicPlayer(char* path, SceShellSvcAudioCustomOpt* optParams);
 
 #ifdef __cplusplus

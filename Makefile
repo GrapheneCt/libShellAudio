@@ -5,7 +5,7 @@ INCLUDES   = include
 PREFIX  ?= ${DOLCESDK}/arm-dolce-eabi
 CC      = arm-dolce-eabi-gcc
 AR      = arm-dolce-eabi-ar
-CFLAGS  = -Wl,-q -Wall -O3 -I$(INCLUDES) -I$(DOLCESDK)/arm-dolce-eabi/include/freetype2 -ffat-lto-objects -flto
+CFLAGS  = -Wl,-q -Wall -O3 -I$(INCLUDES) -ffat-lto-objects -flto
 ASFLAGS = $(CFLAGS)
 
 all: $(TARGET_LIB)
@@ -13,7 +13,7 @@ all: $(TARGET_LIB)
 debug: CFLAGS += -DDEBUG_BUILD
 debug: all
 
-$(TARGET_LIB): $(SHADERS) $(OBJS)
+$(TARGET_LIB): $(OBJS)
 	$(AR) -rc $@ $^
 
 clean:

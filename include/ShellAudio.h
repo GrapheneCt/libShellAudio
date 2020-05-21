@@ -85,8 +85,13 @@ typedef enum SceShellSvcAudioEQMode {
 
 typedef enum SceShellSvcAudioShuffleMode {
 	SCE_SHELLAUDIO_SHUFFLE_DISABLE = 0x1,
-	SCE_SHELLAUDIO_SHUFFLE_ENABLE,
+	SCE_SHELLAUDIO_SHUFFLE_ENABLE
 } SceShellSvcAudioShuffleMode;
+
+typedef enum SceShellSvcAudioALCMode {
+	SCE_SHELLAUDIO_ALC_DISABLE,
+	SCE_SHELLAUDIO_ALC_ENABLE
+} SceShellSvcAudioALCMode;
 
 typedef enum SceShellSvcAudioPlaybackState {
 	SCE_SHELLAUDIO_PBSTATE_MUSIC = 0x1,
@@ -239,9 +244,18 @@ int shellAudioSendCommandForMusicPlayer(int commandId, int param_2);
 int shellAudioSetSeekTimeForMusicPlayer(unsigned int time);
 
 /**
+ * Seek for music player, performed automatically.
+ *
+ * @param[in] time - time to seek in milliseconds
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioAutoSeekForMusicPlayer(unsigned int time);
+
+/**
  * Set repeat mode for music player.
  *
- * @param[in] mode - one of 
+ * @param[in] mode - one of ::SceShellSvcAudioRepeatMode
  *
  * @return SCE_OK, <0 on error.
  */
@@ -250,7 +264,7 @@ int shellAudioSetRepeatModeForMusicPlayer(int mode);
 /**
  * Set shuffle mode for music player.
  *
- * @param[in] mode - one of
+ * @param[in] mode - one of ::SceShellSvcShuffleRepeatMode
  *
  * @return SCE_OK, <0 on error.
  */
@@ -259,11 +273,29 @@ int shellAudioSetShuffleModeForMusicPlayer(int mode);
 /**
  * Set EQ mode for music player.
  *
- * @param[in] mode - one of
+ * @param[in] mode - one of ::SceShellSvcAudioEQMode
  *
  * @return SCE_OK, <0 on error.
  */
 int shellAudioSetEQModeForMusicPlayer(int mode);
+
+/**
+ * Set ALC (Dynamic normalizer) mode for music player.
+ *
+ * @param[in] mode - one of ::SceShellSvcAudioALCMode
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioSetALCModeForMusicPlayer(int mode);
+
+/**
+ * Set audio volume for music player. This function writes to registry.
+ *
+ * @param[in] volume - audio volume (max is 32768)
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioSetVolumeForMusicPlayer(unsigned int volume);
 
 /**
  * Lock music player controls and playback until application is terminated for music player.

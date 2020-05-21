@@ -61,19 +61,22 @@ static int global_2 = 0;
 /* events
 0xD0000 - init BGM
 0xD0002 - set custom BGM
-0xD0006 - set some param1 for BGM
+0xD0006 - set audio volume
 0xD0007 - set some param2 for BGM
 0xD0004 - send command (play, pause, seek etc.) for BGM
 
 0x30000 - init Music Player (called 1 time after app starts)
-0x30001 - ??? (is in Music Player code, but never actually called)
-0x30003 - get some sqlite stuff? (called 1 time after app starts)
+0x30001 - finish Music Player
+0x30003 - get some sqlite buffer
 0x30004 - set custom music
 0x30006 - send command (play, pause, seek etc.)
 0x30007 - get playback-related stats (called in a loop)
+0x30008 - set audio volume
 0x30009 - set repeat mode
 0x3000A - set shuffle mode
 0x3000B - set seek time
+0x3000E - auto seek
+0x3000F - set ALC mode
 0x30010 - set EQ mode
 0x30011 - ???, (called when you attempt to switch tracks, but there is no next song)
 0x30013 - lock music player
@@ -84,6 +87,25 @@ static int global_2 = 0;
 0x3001A - ???, always called in a loop
 0x3001B - get something? (called 1 time after app starts, 2 times when switching to player UI, every time next track is selected)
 */
+
+int shellAudioFinishInternal(int eventId)
+{
+	void* tptr = SceShellSvc_B31E7F1C();
+
+	SceShellSvcCustomAudioSubParams1 params1;
+	params1.unk_00 = 0;
+	params1.tracking1 = global_1;
+	params1.tracking2 = global_2;
+
+	SceShellSvcAudioCustomParams mainParams;
+	mainParams.params1 = &params1;
+	mainParams.params1Size = 0xC;
+
+	SceShellSvcAudioOutput outputInfo;
+	sceClibMemset(&outputInfo, 0, 0x8);
+
+	return ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, eventId, &mainParams, 1, &outputInfo, 0, 0);
+}
 
 int shellAudioSendCommandInternal(int eventId, int commandId, int param_2)
 {
@@ -208,21 +230,7 @@ int shellAudioFinishForBGM(void)
 		goto end;
 	}
 
-	void* tptr = SceShellSvc_B31E7F1C();
-
-	SceShellSvcCustomAudioSubParams1 params1;
-	params1.unk_00 = 0;
-	params1.tracking1 = global_1;
-	params1.tracking2 = global_2;
-
-	SceShellSvcAudioCustomParams mainParams;
-	mainParams.params1 = &params1;
-	mainParams.params1Size = 0xC;
-
-	SceShellSvcAudioOutput outputInfo;
-	sceClibMemset(&outputInfo, 0, 0x8);
-
-	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0xD0001, &mainParams, 1, &outputInfo, 0, 0);
+	ret = shellAudioFinishInternal(0xD0001);
 
 	if (ret != 0)
 		goto end;
@@ -431,6 +439,21 @@ end:
 	return ret;
 }
 
+int shellAudioFinishForMusicPlayer(void)
+{
+	int ret = shellAudioFinishInternal(0x30001);
+
+	if (ret != 0)
+		goto end;
+
+	global_1 = 0;
+	global_2 = 0;
+
+end:
+
+	return ret;
+}
+
 int shellAudioGetSqliteBufferForMusicPlayer(void* infoBuffer)
 {
 	int ret;
@@ -616,6 +639,11 @@ int shellAudioSetSeekTimeForMusicPlayer(unsigned int time)
 	return shellAudioSetParamInternal(0x3000B, time);
 }
 
+int shellAudioAutoSeekForMusicPlayer(unsigned int time)
+{
+	return shellAudioSetParamInternal(0x3000E, time);
+}
+
 int shellAudioSetRepeatModeForMusicPlayer(int mode)
 {
 	int ret;
@@ -661,6 +689,54 @@ int shellAudioSetEQModeForMusicPlayer(int mode)
 	}
 
 	ret = shellAudioSetParamInternal(0x30010, mode);
+
+end:
+
+	return ret;
+}
+
+int shellAudioSetALCModeForMusicPlayer(int mode)
+{
+	int ret;
+
+	if (mode != 0 && mode != 1) {
+		ret = SCE_SHELLAUDIO_ERROR_INVALID_ARG_2;
+		goto end;
+	}
+
+	ret = shellAudioSetParamInternal(0x3000F, mode);
+
+end:
+
+	return ret;
+}
+
+int shellAudioSetVolumeForMusicPlayer(unsigned int volume)
+{
+	int ret;
+
+	if (volume > 0x8000) {
+		ret = SCE_SHELLAUDIO_ERROR_INVALID_ARG;
+		goto end;
+	}
+
+	void* tptr = SceShellSvc_B31E7F1C();
+
+	SceShellSvcCustomAudioSubParams1 params1;
+	params1.unk_00 = 0;
+	params1.tracking1 = global_1;
+	params1.tracking2 = global_2;
+
+	SceShellSvcAudioCustomParams mainParams;
+	mainParams.params1 = &volume;
+	mainParams.params1Size = 0x4;
+	mainParams.params2 = &params1;
+	mainParams.params2Size = 0xC;
+
+	SceShellSvcAudioOutput outputInfo;
+	sceClibMemset(&outputInfo, 0, 0x8);
+
+	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x30008, &mainParams, 2, &outputInfo, 0, 0);
 
 end:
 

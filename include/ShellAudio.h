@@ -30,11 +30,17 @@ typedef struct SceShellSvcAudioMusicPlayerStatus {
 } SceShellSvcAudioMusicPlayerStatus;
 
 typedef struct SceShellSvcAudioPlaybackStatus {
-	char unk_00[0x10];
+	int unk_00;
+	int unk_04;
+	int unk_08;
+	int unk_0C;
 	int currentState;
 	int unk_14;
 	int bgmPortStatus;
-	char unk_1C[0x10];
+	int unk_1C;
+	int unk_20;
+	int unk_24;
+	int unk_28;
 	unsigned int currentTime;
 	char unk_30[0x40];
 } SceShellSvcAudioPlaybackStatus;
@@ -189,6 +195,13 @@ int shellAudioSendCommandForBGM(int commandId, int param_2);
 int shellAudioInitializeForMusicPlayer(int init_type);
 
 /**
+ * Finish ShellAudio for BGM.
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioFinishForMusicPlayer(void);
+
+/**
  * Get Sqlite commands buffer for music player.
  *
  * @param[out] infoBuffer - pointer to buffer to store output, size is 0x828
@@ -324,6 +337,15 @@ int shellAudioSendSqliteBufferForMusicPlayer(void* infoBuffer, uint16_t param);
  * @return SCE_OK, <0 on error.
  */
 int shellAudioSetAudioForMusicPlayer(char* path, SceShellSvcAudioCustomOpt* optParams);
+
+/**
+ * Get current bgm status.
+ *
+ * @param[out] status - pointer to ::SceShellAudioBGMState struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
+int shellAudioGetCurrentBGMState(SceShellAudioBGMState* status);
 
 #ifdef __cplusplus
 }

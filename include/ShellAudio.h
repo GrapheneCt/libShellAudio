@@ -132,7 +132,7 @@ void shellAudioInitializeForShell(void);
 /**
  * Initialize ShellAudio for BGM.
  *
- * @param[in] devnum - 0 for BGM proxy, 1 for SceShell
+ * @param[in] init_type - 0 for BGM proxy, 1 for SceShell
  *
  * @return SCE_OK, <0 on error.
  */

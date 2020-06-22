@@ -840,7 +840,7 @@ int shellAudioGetCurrentBGMState(SceShellAudioBGMState* status)
 }
 
 int module_stop(SceSize argc, const void *args) {
-	sceClibPrintf("ShellAudio module start\n");
+	sceClibPrintf("ShellAudio module stop\n");
 	return SCE_KERNEL_STOP_SUCCESS;
 }
 
@@ -851,6 +851,6 @@ int module_exit() {
 
 void _start() __attribute__((weak, alias("module_start")));
 int module_start(SceSize argc, void *args) {
-	sceClibPrintf("ShellAudio module stop\n");
+	sceClibPrintf("ShellAudio module start\n");
 	return SCE_KERNEL_START_SUCCESS;
 }

@@ -8,7 +8,7 @@ ShellAudio:
     stop: module_stop
     exit: module_exit
   modules:
-    simple:
+    ShellAudio:
       functions:
         - shellAudioInitializeForShell
         - shellAudioInitializeForBGM

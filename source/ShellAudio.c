@@ -1,5 +1,6 @@
 ﻿#include <psp2/kernel/clib.h>
 #include <psp2/types.h> 
+#include <psp2/shellsvc.h> 
 
 #include "ShellAudio.h"
 
@@ -50,7 +51,6 @@ typedef struct SceShellSvcTable {
 
 extern int sceAppMgrSetBgmProxyApp(const char*);
 extern int sceAppMgrGetCurrentBgmState2(SceShellAudioBGMState*);
-extern void* SceShellSvc_B31E7F1C(void); //SceShellSvcGetTable
 
 static int isInitialized = 0;
 static int isReady = 0;
@@ -90,7 +90,7 @@ static int global_2 = 0;
 
 int shellAudioFinishInternal(int eventId)
 {
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -109,7 +109,7 @@ int shellAudioFinishInternal(int eventId)
 
 int shellAudioSendCommandInternal(int eventId, int commandId, int param_2)
 {
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -148,14 +148,14 @@ int shellAudioSetParamInternal(int eventId, unsigned int param)
 	SceShellSvcAudioOutput outputInfo;
 	sceClibMemset(&outputInfo, 0, 0x8);
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	return ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, eventId, &mainParams, 2, &outputInfo, 0, 0);
 }
 
 int shellAudioSetParam2Internal(int eventId, int8_t param)
 {
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -192,7 +192,7 @@ int shellAudioInitializeForBGM(int init_type)
 	if (init_type == 0)
 		sceAppMgrSetBgmProxyApp("NPXS19999");
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -266,7 +266,7 @@ int shellAudioSetAudioForBGM(char* path, SceShellSvcAudioCustomOpt* optParams)
 
 	pathlen = sceClibStrnlen(path, 0x401);
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -317,7 +317,7 @@ int shellAudioSetVolumeForBGM(unsigned int volume)
 		goto end;
 	}
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -417,7 +417,7 @@ int shellAudioInitializeForMusicPlayer(int init_type)
 		break;
 	}
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcAudioCustomParams mainParams;
 	mainParams.params1 = &params1;
@@ -481,7 +481,7 @@ int shellAudioGetSqliteBufferForMusicPlayer(void* infoBuffer)
 	outputInfo.outPtr1 = NULL;
 	outputInfo.outPtr2 = &mainParams.params2;
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x30003, &mainParams, 1, &outputInfo, &mainParams.params2, 1);
 
@@ -522,7 +522,7 @@ int shellAudioGetMetadataForMusicPlayer(SceShellSvcAudioMetadata* infoBuffer)
 	outputInfo.outPtr1 = NULL;
 	outputInfo.outPtr2 = &mainParams.params2;
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x3001B, &mainParams, 1, &outputInfo, &mainParams.params2, 1);
 
@@ -563,7 +563,7 @@ int shellAudioGetPlaybackStatusForMusicPlayer(SceShellSvcAudioPlaybackStatus* in
 	outputInfo.outPtr1 = NULL;
 	outputInfo.outPtr2 = &mainParams.params2;
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x30007, &mainParams, 1, &outputInfo, &mainParams.params2, 1);
 
@@ -604,7 +604,7 @@ int shellAudioGetStatusForMusicPlayer(SceShellSvcAudioMusicPlayerStatus* status)
 	outputInfo.outPtr1 = NULL;
 	outputInfo.outPtr2 = &mainParams.params2;
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x3001A, &mainParams, 1, &outputInfo, &mainParams.params2, 1);
 
@@ -720,7 +720,7 @@ int shellAudioSetVolumeForMusicPlayer(unsigned int volume)
 		goto end;
 	}
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;
@@ -777,7 +777,7 @@ int shellAudioSendSqliteBufferForMusicPlayer(void* infoBuffer, uint16_t param)
 	SceShellSvcAudioOutput outputInfo;
 	sceClibMemset(&outputInfo, 0, 0x8);
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	ret = ((SceShellSvcTable *)(*(uint32_t *)tptr))->sceShellSvcAudioControl(tptr, 0x30018, &mainParams, 3, &outputInfo, 0, 0);
 
@@ -797,7 +797,7 @@ int shellAudioSetAudioForMusicPlayer(char* path, SceShellSvcAudioCustomOpt* optP
 
 	pathlen = sceClibStrnlen(path, 0x401);
 
-	void* tptr = SceShellSvc_B31E7F1C();
+	void* tptr = sceShellSvcGetSvcObj();
 
 	SceShellSvcCustomAudioSubParams1 params1;
 	params1.unk_00 = 0;

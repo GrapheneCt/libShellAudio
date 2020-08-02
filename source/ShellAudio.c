@@ -1,4 +1,5 @@
-﻿#include <psp2/kernel/clib.h>
+﻿#include <psp2/kernel/modulemgr.h> 
+#include <psp2/kernel/clib.h>
 #include <psp2/types.h> 
 #include <psp2/shellsvc.h> 
 

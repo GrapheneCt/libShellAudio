@@ -1,17 +1,6 @@
 ﻿#ifndef SHELLAUDIO_H
 #define SHELLAUDIO_H
 
-#include <stdbool.h>
-#include <psp2/kernel/modulemgr.h> 
-#include <psp2/kernel/threadmgr.h> 
-#include <psp2/appmgr.h> 
-#include <psp2/kernel/sysmem.h> 
-#include <psp2/kernel/clib.h>
-#include <psp2/types.h> 
-#include <psp2/sysmodule.h> 
-#include <psp2/io/fcntl.h> 
-#include <psp2/shellutil.h> 
-
 #ifdef __cplusplus
 extern "C" {
 #endif

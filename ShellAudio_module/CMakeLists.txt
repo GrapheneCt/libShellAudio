@@ -11,9 +11,6 @@ endif()
 include("$ENV{DOLCESDK}/share/dolce.cmake" REQUIRED)
 
 project(ShellAudio)
-dolce_gen_libs(SceShellSvc_stubs
-  SceShellSvc.yml
-  LIB SceShellSvc_stub_weak)
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -nostdlib")

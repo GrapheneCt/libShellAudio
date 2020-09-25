@@ -19,14 +19,12 @@ set_target_properties(${PROJECT_NAME}
   -nostartfiles
 )
 target_link_libraries(${PROJECT_NAME}
-  SceSysmem_stub_weak
-  SceDisplay_stub_weak
   SceSysmodule_stub_weak
   SceIofilemgr_stub_weak
   SceLibKernel_stub_weak
   SceKernelThreadMgr_stub_weak
   SceKernelModulemgr_stub_weak
-  SceAppMgr_stub_weak
+  SceAppMgrUser_stub_weak
   SceShellSvc_stub_weak
 )
 

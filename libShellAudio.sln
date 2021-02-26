@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1401
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libShellAudio", "libShellAudio\libShellAudio.vcxproj", "{37907EBC-8800-45CD-981A-52C48D41D318}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|PSVita = Debug|PSVita
+		Release|PSVita = Release|PSVita
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37907EBC-8800-45CD-981A-52C48D41D318}.Debug|PSVita.ActiveCfg = Debug|PSVita
+		{37907EBC-8800-45CD-981A-52C48D41D318}.Debug|PSVita.Build.0 = Debug|PSVita
+		{37907EBC-8800-45CD-981A-52C48D41D318}.Release|PSVita.ActiveCfg = Release|PSVita
+		{37907EBC-8800-45CD-981A-52C48D41D318}.Release|PSVita.Build.0 = Release|PSVita
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95D8CC64-C5E3-4F0B-9E54-2AD730D51CAE}
+	EndGlobalSection
+EndGlobal

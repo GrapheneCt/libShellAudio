@@ -28,11 +28,11 @@ add_library(${PROJECT_NAME} STATIC
   libShellAudio/source/ShellAudio.c
 )
 
-add_definitions(-DSHELLAUDIO_PRX)
-
 add_library("${PROJECT_NAME}.suprx" SHARED
   libShellAudio/source/ShellAudio.c
 )
+
+target_compile_definitions("${PROJECT_NAME}.suprx" PUBLIC -DSHELLAUDIO_PRX)
 
 target_link_libraries("${PROJECT_NAME}.suprx"
   SceAppMgrUser_stub_weak

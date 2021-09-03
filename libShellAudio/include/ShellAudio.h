@@ -11,12 +11,17 @@ extern "C" {
 #define PRX_INTERFACE
 #endif
 
-typedef struct SceMusicCoreCustomOpt {
+typedef struct SceMusicOpt {
 	int flag; // set to 0 if not used
 	int param1;
 	int param2;
 	int param3;
-} SceMusicCoreCustomOpt;
+} SceMusicOpt;
+
+typedef struct SceMusicInternalAppResult {
+	int state;
+	int time;
+} SceMusicInternalAppResult;
 
 typedef struct SceMusicPlayerServicePlayStatus {
 	int stat1;
@@ -61,76 +66,87 @@ typedef struct SceMusicPlayerServiceTrackInfo {
 	int unk_180C;
 } SceMusicPlayerServiceTrackInfo;
 
-typedef enum SceMusicCoreEventId {
-	SCE_MUSICCORE_EVENTID_DEFAULT = 0,
-	SCE_MUSICCORE_EVENTID_PLAY = 0x1,
-	SCE_MUSICCORE_EVENTID_STOP = 0x2,
-	SCE_MUSICCORE_EVENTID_NEXT = 0x3,
-	SCE_MUSICCORE_EVENTID_PREVIOUS = 0x4,
-	SCE_MUSICCORE_EVENTID_SEEK = 0x11
-} SceMusicCoreEventId;
+typedef enum SceMusicEventId {
+	SCE_MUSIC_EVENTID_DEFAULT = 0,
+	SCE_MUSIC_EVENTID_PLAY = 0x1,
+	SCE_MUSIC_EVENTID_STOP = 0x2,
+	SCE_MUSIC_EVENTID_NEXT = 0x3,
+	SCE_MUSIC_EVENTID_PREVIOUS = 0x4,
+	SCE_MUSIC_EVENTID_SEEK = 0x11
+} SceMusicEventId;
 
-typedef enum SceMusicPlayerServiceRepeatMode {
-	SCE_MUSICSERVICE_REPEAT_ALL,
-	SCE_MUSICSERVICE_REPEAT_ONE,
-	SCE_MUSICSERVICE_REPEAT_DISABLE
-} SceMusicPlayerServiceRepeatMode;
+typedef enum SceMusicRepeatMode {
+	SCE_MUSIC_REPEAT_ALL,
+	SCE_MUSIC_REPEAT_ONE,
+	SCE_MUSIC_REPEAT_DISABLE
+} SceMusicRepeatMode;
 
-typedef enum SceMusicPlayerServiceEQMode {
-	SCE_MUSICSERVICE_EQ_DISABLE,
-	SCE_MUSICSERVICE_EQ_HEAVY,
-	SCE_MUSICSERVICE_EQ_POP,
-	SCE_MUSICSERVICE_EQ_JAZZ,
-	SCE_MUSICSERVICE_EQ_UNIQUE
-} SceMusicPlayerServiceEQMode;
+typedef enum SceMusicEQMode {
+	SCE_MUSIC_EQ_DISABLE,
+	SCE_MUSIC_EQ_HEAVY,
+	SCE_MUSIC_EQ_POP,
+	SCE_MUSIC_EQ_JAZZ,
+	SCE_MUSIC_EQ_UNIQUE
+} SceMusicEQMode;
 
-typedef enum SceMusicPlayerServiceShuffleMode {
-	SCE_MUSICSERVICE_SHUFFLE_DISABLE = 0x1,
-	SCE_MUSICSERVICE_SHUFFLE_ENABLE
-} SceMusicPlayerServiceShuffleMode;
+typedef enum SceMusicShuffleMode {
+	SCE_MUSIC_SHUFFLE_DISABLE = 0x1,
+	SCE_MUSIC_SHUFFLE_ENABLE
+} SceMusicShuffleMode;
 
-typedef enum SceMusicPlayerServiceALCMode {
-	SCE_MUSICSERVICE_ALC_DISABLE,
-	SCE_MUSICSERVICE_ALC_ENABLE
-} SceMusicPlayerServiceALCMode;
+typedef enum SceMusicALCMode {
+	SCE_MUSIC_ALC_DISABLE,
+	SCE_MUSIC_ALC_ENABLE
+} SceMusicALCMode;
 
 /* Error codes */
 
-typedef enum SceMusicCoreErrorCodes {
-	SCE_MUSICCORE_ERROR_INVALID_ARG = 0x80101900,
-	SCE_MUSICCORE_ERROR_NOT_INITIALIZED = 0x80101901,
-	SCE_MUSICCORE_ERROR_ALREADY_INITIALIZED = 0x80101902,
-	SCE_MUSICCORE_ERROR_NOT_READY = 0x80101903,
-	SCE_MUSICCORE_ERROR_INVALID_ARG_2 = 0x80100E00
-} SceMusicCoreErrorCodes;
+typedef enum SceMusicErrorCodes {
+	SCE_MUSIC_ERROR_INVALID_ARG = 0x80101900,
+	SCE_MUSIC_ERROR_NOT_INITIALIZED = 0x80101901,
+	SCE_MUSIC_ERROR_ALREADY_INITIALIZED = 0x80101902,
+	SCE_MUSIC_ERROR_NOT_READY = 0x80101903,
+	SCE_MUSIC_ERROR_INVALID_SERVICE_ARG = 0x80100E00
+} SceMusicErrorCodes;
 
 /* Application BGM */
 
 /**
  * Initialize custom BGM music service.
  *
- * @param[in] devnum - 0 for BGM proxy, 1 for SceShell
+ * @param[in] init_type - 0 for BGM proxy, 1 for SceShell
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicServiceInitialize(int init_type);
+PRX_INTERFACE int sceMusicInternalAppInitialize(int init_type);
 
 /**
  * Terminate custom BGM music service.
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicServiceTerminate(void);
+PRX_INTERFACE int sceMusicInternalAppTerminate(void);
 
 /**
  * Set path to audio file for BGM.
  *
  * @param[in] path - path to audio file
- * @param[in] path - pointer to ::SceMusicCoreCustomOpt struct
+ * @param[in] path - pointer to ::SceMusicOpt struct
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicCoreBgmOpen(char* path, SceMusicCoreCustomOpt* optParams);
+PRX_INTERFACE int sceMusicInternalAppSetUri(char* path, SceMusicOpt* optParams);
+
+/**
+ * Set path to audio file for BGM with ext arg.
+ *
+ * @param[in] path - path to audio file
+ * @param[in] path - pointer to ::SceMusicOpt struct
+ * @param[in] extArg - extra arg
+ *
+ * @return SCE_OK, <0 on error.
+ */
+PRX_INTERFACE int sceMusicInternalAppSetUriExt(char* path, SceMusicOpt* optParams, unsigned short extArg);
 
 /**
  * Set audio volume for BGM.
@@ -139,26 +155,44 @@ PRX_INTERFACE int sceCustomMusicCoreBgmOpen(char* path, SceMusicCoreCustomOpt* o
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicCoreBgmSetAudioVolume(unsigned int volume);
+PRX_INTERFACE int sceMusicInternalAppSetVolume(unsigned int volume);
 
 /**
- * Set param2 for BGM.
+ * Set repeat mode for BGM.
  *
- * @param[in] param - param2
+ * @param[in] mode - repeat mode
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicCoreBgmSetParam2(int8_t param);
+PRX_INTERFACE int sceMusicInternalAppSetRepeatMode(int mode);
 
 /**
  * Send event for BGM.
  *
- * @param[in] eventId - one of ::SceMusicCoreEventId
+ * @param[in] eventId - one of ::SceMusicEventId
  * @param[in] param_2 - unknown param, set to 0
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceCustomMusicCoreSendEvent(int eventId, int param_2);
+PRX_INTERFACE int sceMusicInternalAppSetPlaybackCommand(int eventId, int param_2);
+
+/**
+ * Get operation result for BGM.
+ *
+ * @param[in] resBuffer - pointer to ::SceMusicInternalAppResult struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
+PRX_INTERFACE int sceMusicInternalAppGetLastResult(SceMusicInternalAppResult *resBuffer);
+
+/**
+ * Get playback status for BGM.
+ *
+ * @param[in] resBuffer - pointer to playback info struct
+ *
+ * @return SCE_OK, <0 on error.
+ */
+PRX_INTERFACE int sceMusicInternalAppGetPlaybackStatus(void *resBuffer);
 
 /* Music Player */
 
@@ -313,7 +347,7 @@ PRX_INTERFACE int sceMusicPlayerServiceSetTrackList(void* infoBuffer, uint16_t p
  *
  * @return SCE_OK, <0 on error.
  */
-PRX_INTERFACE int sceMusicPlayerServiceOpen(char* path, SceMusicCoreCustomOpt* optParams);
+PRX_INTERFACE int sceMusicPlayerServiceOpen(char* path, SceMusicOpt* optParams);
 
 #ifdef __cplusplus
 }

@@ -1032,19 +1032,18 @@ int shellAudioGetCurrentBGMState(SceShellAudioBGMState* status)
 }
 
 #ifdef SHELLAUDIO_PRX
-int module_stop(SceSize argc, const void *args) {
+int __module_stop(SceSize argc, const void *args) {
 	sceClibPrintf("ShellAudio module stop\n");
 	return SCE_KERNEL_STOP_SUCCESS;
 }
 
-int module_exit() {
+int __module_exit() {
 	sceClibPrintf("ShellAudio module exit\n");
 	return SCE_KERNEL_STOP_SUCCESS;
 }
 
-void _start() __attribute__((weak, alias("module_start")));
-int module_start(SceSize argc, void *args) {
-	sceClibPrintf("ShellAudio module start, ver. 01.10\n");
+int __module_start(SceSize argc, void *args) {
+	sceClibPrintf("ShellAudio module start, ver. 01.20\n");
 	return SCE_KERNEL_START_SUCCESS;
 }
 #endif

@@ -24,7 +24,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <PropertyGroup Condition="'$(DebuggerFlavor)'=='PSVitaDebugger'" Label="OverrideDebuggerDefaults">
@@ -55,7 +55,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">
     <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;SHELLAUDIO_PRX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OptimizationLevel>Level3</OptimizationLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>$(SCE_PSP2_SDK_DIR)\target\include\vdsuite\user;$(SCE_PSP2_SDK_DIR)\target\include\vdsuite\common;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -66,7 +66,11 @@
     <Link>
       <InfoStripping>StripSymsAndDebug</InfoStripping>
       <AdditionalDependencies>-lSceShellSvc_stub_weak;-lSceAppMgrUser_stub_weak;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>--no-required-files</AdditionalOptions>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SCE_PSP2_SDK_DIR)/host_tools/build/bin/vdsuite-pubprx.exe" --strip --compress "$(LocalDebuggerCommand)" "$(LocalDebuggerCommand)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
